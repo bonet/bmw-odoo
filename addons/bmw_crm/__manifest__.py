@@ -4,7 +4,7 @@
     'depends': ['crm'],
     'data': [
         'views/crm_lead_views.xml',
-        'views/bmw_crm_menu_views.xml',
+        'security/ir.model.access.csv',
     ],
     'installable': True,
     'auto_install': False,
