@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- First, define the view -->
     <record id="view_bmw_crm_lead_form" model="ir.ui.view">
         <field name="name">crm.lead.form.inherit.bmw</field>
         <field name="model">crm.lead</field>
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
-            <!-- Try this specific xpath -->
             <xpath expr="//group[@name='lead_priority']" position="after">
                 <group string="Social Media">
                     <field name="linkedin_url" widget="url"/>
                 </group>
             </xpath>
-        </field>
-    </record>
 
-    <!-- Then, reference it in your action -->
-    <record id="action_bmw_crm_leads" model="ir.actions.act_window">
-        <field name="name">BMW Leads</field>
-        <field name="res_model">crm.lead</field>
-        <field name="view_mode">tree,form</field>
-        <field name="view_id" ref="view_bmw_crm_lead_form"/>
+            <xpath expr="//group[@name='lead_priority']" position="after">
+                <group string="LinkedIn Results">
+                    <field name="linkedin_results" readonly="1">
+                        <tree editable="false" delete="false" create="false">
+                            <field name="title"/>
+                            <button name="set_as_linkedin_url" type="object" string="Populate" class="btn-secondary"/>
+                        </tree>
+                    </field>
+                    <button name="reload_linkedin_results" type="object" string="Reload" class="btn-primary"/>
+                </group>
+            </xpath>
+        </field>
     </record>
 </odoo>
