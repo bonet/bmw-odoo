@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_linkedin_result_form" model="ir.ui.view">
+        <field name="name">crm.linkedin.result.form</field>
+        <field name="model">crm.linkedin.result</field>
+        <field name="arch" type="xml">
+            <form string="LinkedIn Result">
+                <sheet>
+                    <group>
+                        <field name="title"/>
+                        <field name="link" widget="url"/>
+                        <field name="full_name"/>
+                        <field name="profile_photo" widget="url"/>
+                        <field name="headline"/>
+                        <field name="about"/>
+                        <field name="description1"/>
+                        <field name="description1_link" widget="url"/>
+                        <field name="description2"/>
+                        <field name="description2_link" widget="url"/>
+                    </group>
+                    <notebook>
+                        <page string="Experiences">
+                            <field name="experiences" readonly="1">
+                                <tree editable="false" delete="false" create="false">
+                                    <field name="position"/>
+                                    <field name="company_name"/>
+                                    <field name="company_url" widget="url"/>
+                                    <field name="location"/>
+                                    <field name="starts_at"/>
+                                    <field name="duration"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Educations">
+                            <field name="educations" readonly="1">
+                                <tree editable="false" delete="false" create="false">
+                                    <field name="college_name"/>
+                                    <field name="college_url" widget="url"/>
+                                    <field name="college_degree"/>
+                                    <field name="college_degree_field"/>
+                                    <field name="college_duration"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>

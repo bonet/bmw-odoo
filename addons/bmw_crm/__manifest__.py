@@ -4,6 +4,7 @@
     'depends': ['crm'],
     'data': [
         'views/crm_lead_views.xml',
+        'views/crm_linkedin_result_views.xml',
         'security/ir.model.access.csv',
     ],
     'installable': True,
