@@ -1,2 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_bmw_crm_linkedin_result,bmw.crm.linkedin.result,model_bmw_crm_linkedin_result,,1,1,1,1
+access_crm_linkedin_education_preview,crm.linkedin.education.preview,model_crm_linkedin_education_preview,,1,1,1,1
+access_crm_linkedin_education_result,crm.linkedin.education.result,model_crm_linkedin_education_result,,1,1,1,1
+access_crm_linkedin_experience_preview,crm.linkedin.experience.preview,model_crm_linkedin_experience_preview,,1,1,1,1
+access_crm_linkedin_experience_result,crm.linkedin.experience.result,model_crm_linkedin_experience_result,,1,1,1,1
+access_crm_linkedin_result,crm.linkedin.result,model_crm_linkedin_result,,1,1,1,1
