@@ -12,11 +12,44 @@
             </xpath>
 
             <xpath expr="//group[@name='lead_priority']" position="after">
+                <group string="LinkedIn Preview">
+                    <field name="linkedin_preview_full_name"/>
+                    <field name="linkedin_preview_profile_photo_preview" widget="image"/>
+                    <field name="linkedin_preview_headline"/>
+                    <field name="linkedin_preview_about"/>
+                    <field name="linkedin_preview_description1"/>
+                    <field name="linkedin_preview_description1_link" widget="url"/>
+                    <field name="linkedin_preview_description2"/>
+                    <field name="linkedin_preview_description2_link" widget="url"/>
+                    <field name="linkedin_preview_experiences" readonly="1">
+                        <tree editable="false" delete="false" create="false">
+                            <field name="position"/>
+                            <field name="company_name"/>
+                            <field name="company_url" widget="url"/>
+                            <field name="location"/>
+                            <field name="starts_at"/>
+                            <field name="duration"/>
+                        </tree>
+                    </field>
+                    <field name="linkedin_preview_educations" readonly="1">
+                        <tree editable="false" delete="false" create="false">
+                            <field name="college_name"/>
+                            <field name="college_url" widget="url"/>
+                            <field name="college_degree"/>
+                            <field name="college_degree_field"/>
+                            <field name="college_duration"/>
+                        </tree>
+                    </field>
+                    <button name="set_as_linkedin_url" type="object" string="Populate" class="btn-primary"/>
+                </group>
+            </xpath>
+
+            <xpath expr="//group[@name='lead_priority']" position="after">
                 <group string="LinkedIn Results">
                     <field name="linkedin_results" readonly="1">
                         <tree editable="false" delete="false" create="false">
                             <field name="title"/>
-                            <button name="set_as_linkedin_url" type="object" string="Populate" class="btn-secondary"/>
+                            <button name="set_as_linkedin_preview" type="object" string="Preview" class="btn-secondary"/>
                         </tree>
                     </field>
                     <button name="reload_linkedin_results" type="object" string="Reload" class="btn-primary"/>

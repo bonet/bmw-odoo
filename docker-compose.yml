@@ -1,6 +1,9 @@
 version: '3'
 services:
   odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: odoo:17.0
     env_file: .env
     depends_on:
@@ -10,6 +13,7 @@ services:
     volumes:
       - data:/var/lib/odoo
       - ./addons:/mnt/extra-addons
+      - ./utils:/mnt/utils
   postgres:
     image: postgres:17
     env_file: .env

@@ -9,6 +9,7 @@
                         <field name="title"/>
                         <field name="link" widget="url"/>
                         <field name="full_name"/>
+                        <field name="profile_photo_preview" widget="image"/>
                         <field name="profile_photo" widget="url"/>
                         <field name="headline"/>
                         <field name="about"/>
