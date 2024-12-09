@@ -6,13 +6,26 @@
         <field name="inherit_id" ref="crm.crm_lead_view_form"/>
         <field name="arch" type="xml">
             <xpath expr="//group[@name='lead_priority']" position="after">
-                <group string="Social Media">
-                    <field name="linkedin_url" widget="url"/>
+                <!-- <templates>
+                    <script>
+                        console.log('Hello, World!');
+                    </script>
+                </templates> -->
+                <group>
+                    <field name="linkedin_results_visibility" invisible="1"/>
+                    <field name="linkedin_preview_title" invisible="1"/>
+                    <button name="reload_linkedin_results" type="object" string="Load LinkedIn" class="btn btn-primary"/>
                 </group>
-            </xpath>
-
-            <xpath expr="//group[@name='lead_priority']" position="after">
-                <group string="LinkedIn Preview">
+                <group></group>
+                <group string="LinkedIn Results" invisible="not(linkedin_results_visibility)">
+                    <field name="linkedin_results" readonly="1">
+                        <tree editable="false" delete="false" create="false">
+                            <field name="title"/>
+                            <button name="set_as_linkedin_preview" type="object" string="Preview" class="btn btn-secondary"/>
+                        </tree>
+                    </field>
+                </group>
+                <group string="LinkedIn Preview" invisible="not(linkedin_preview_title)">
                     <field name="linkedin_preview_full_name"/>
                     <field name="linkedin_preview_profile_photo_preview" widget="image"/>
                     <field name="linkedin_preview_headline"/>
@@ -42,17 +55,8 @@
                     </field>
                     <button name="set_as_linkedin_url" type="object" string="Populate" class="btn-primary"/>
                 </group>
-            </xpath>
-
-            <xpath expr="//group[@name='lead_priority']" position="after">
-                <group string="LinkedIn Results">
-                    <field name="linkedin_results" readonly="1">
-                        <tree editable="false" delete="false" create="false">
-                            <field name="title"/>
-                            <button name="set_as_linkedin_preview" type="object" string="Preview" class="btn-secondary"/>
-                        </tree>
-                    </field>
-                    <button name="reload_linkedin_results" type="object" string="Reload" class="btn-primary"/>
+                <group string="Social Media">
+                    <field name="linkedin_url" widget="url"/>
                 </group>
             </xpath>
         </field>
