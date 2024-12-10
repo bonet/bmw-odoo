@@ -9,7 +9,6 @@ _logger = logging.getLogger(__name__)
 class CrmLead(models.Model):
     _inherit = 'crm.lead'
 
-    linkedin_results_visibility = fields.Boolean(string="LinkedIn Results Visibility", default=False)
     linkedin_results = fields.One2many('crm.linkedin.result', 'lead_id', string="LinkedIn Results")
     linkedin_preview_title = fields.Char(string="Title", readonly=True)
     linkedin_preview_link = fields.Char(string="Link", readonly=True)
@@ -26,6 +25,9 @@ class CrmLead(models.Model):
     linkedin_preview_experiences = fields.One2many('crm.linkedin.experience.preview', 'lead_id', string="Experiences")
     linkedin_preview_educations = fields.One2many('crm.linkedin.education.preview', 'lead_id', string="Educations")
     linkedin_url = fields.Char(string="LinkedIn URL")
+
+    def load_linkedin(self):
+        pass
 
     def reload_linkedin_results(self):
         _logger.info("Reloading LinkedIn results")
@@ -111,11 +113,8 @@ class CrmLead(models.Model):
                             'college_duration': education.get('college_duration', ''),
                         })
 
-            record.linkedin_results_visibility = True
-
     def set_as_linkedin_url(self):
         _logger.info("Setting as LinkedIn URL")
         for record in self:
             if record.linkedin_preview_link:
                 record.linkedin_url = record.linkedin_preview_link
-                record.linkedin_results_visibility = False
