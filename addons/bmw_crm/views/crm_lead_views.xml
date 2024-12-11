@@ -7,12 +7,12 @@
         <field name="arch" type="xml">
             <xpath expr="//group[@name='lead_priority']" position="after">
                 <group>
-                    <field name="linkedin_preview_title" invisible="1"/>
+                    <field name="id"/>
                     <button name="load_linkedin" type="object" class="btn btn-primary">Load LinkedIn</button>
                 </group>
                 <group></group>
-                <div>
-                    <table id="linkedinTable" class="table table-bordered table-striped d-none">
+                <div id="linkedinTableContainer" class="d-none">
+                    <table id="linkedinTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th>Title</th>
@@ -23,9 +23,12 @@
                         </tbody>
                     </table>
                 </div>
-                <group string="LinkedIn Preview" invisible="not(linkedin_preview_title)">
+                <group string="LinkedIn Preview" invisible="not(linkedin_preview_full_name)">
+                    <field name="linkedin_preview_title" invisible="1"/>
+                    <field name="linkedin_preview_link" invisible="1"/>
                     <field name="linkedin_preview_full_name"/>
                     <field name="linkedin_preview_profile_photo_preview" widget="image"/>
+                    <field name="linkedin_preview_profile_photo" widget="url" invisible="1"/>
                     <field name="linkedin_preview_headline"/>
                     <field name="linkedin_preview_about"/>
                     <field name="linkedin_preview_description1"/>
@@ -58,9 +61,10 @@
                 </group>
                 <templates>
                     <script>
-                        const loadLinkedinButton = document.querySelector('button[name="load_linkedin"]');
+                        loadLinkedinButton = document.querySelector('button[name="load_linkedin"]');
 
                         loadLinkedinButton.addEventListener('click', async () => {
+                            <!-- Customer Name -->
                             const partnerId = document.getElementById('partner_id_1');
                             const partnerName = partnerId.value;
 
@@ -69,46 +73,92 @@
                                 return;
                             } 
 
-                            const response = await fetch('/crm-lead/linkedin/load', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    partner_name: partnerName,
+                            try {
+                                <!-- Load LinkedIn -->
+                                const linkedinLoadResponse = await fetch('/crm-lead/linkedin/load', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        partner_name: partnerName,
+                                    })
                                 })
-                            })
-                            .then(response => response.json())
-                            .catch(error => {
+                                .then(response => response.json());
+
+                                const linkedinResults = linkedinLoadResponse.result;
+                                const table = document.getElementById('linkedinTable');
+                                const tableBody = table.querySelector('tbody');
+                                tableBody.innerHTML = '';
+                                <!-- Populate LinkedIn Table -->
+                                linkedinResults.forEach((result, i) => {
+                                    const row = document.createElement('tr');
+
+                                    const nameCell = document.createElement('td');
+                                    nameCell.textContent = result.title;
+                                    row.appendChild(nameCell);
+
+                                    const previewCell = document.createElement('td');
+                                    const previewButton = document.createElement('button');
+                                    previewButton.textContent = 'Preview';
+                                    previewButton.className = 'btn btn-secondary';
+                                    previewButton.addEventListener('click', async () => {
+                                        try {
+                                            const idDiv = document.querySelector('div[name="id"]');
+
+                                            if (!idDiv) {
+                                                alert('Please save the record first.');
+                                                return;
+                                            }
+
+                                            <!-- Preview LinkedIn -->
+                                            const linkId = result.link.split('/').pop();
+                                            if (!localStorage.getItem('linkedin_preview_' + linkId)) {
+                                                const linkedinPreviewResponse = await fetch('/crm-lead/linkedin/preview', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify({
+                                                        link_id: linkId,
+                                                    })
+                                                })
+                                                .then(response => response.json());
+
+                                                localStorage.setItem('linkedin_preview_' + linkId, JSON.stringify(linkedinPreviewResponse.result));
+                                            }
+
+                                            <!-- Insert LinkedIn Preview -->
+                                            await fetch('/crm-lead/linkedin', {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                },
+                                                body: JSON.stringify({
+                                                    id: parseInt(idDiv.querySelector('span').textContent, 10),
+                                                    title: result.title,
+                                                    link: result.link,
+                                                    data: JSON.parse(localStorage.getItem('linkedin_preview_' + linkId))
+                                                })
+                                            })
+                                            .then(response => response.json());
+                                        } catch (error) {
+                                            alert('Error during AJAX request:', error);
+                                            return;
+                                        }
+                                    });
+                                    previewCell.appendChild(previewButton);
+                                    row.appendChild(previewCell);
+
+                                    tableBody.appendChild(row);
+                                });
+
+                                const tableContainer = document.getElementById('linkedinTableContainer');
+                                tableContainer.classList.remove('d-none');
+                            } catch (error) {
                                 alert('Error during AJAX request:', error);
                                 return;
-                            });
-
-                            const linkedinResults = response.result;
-                            const table = document.getElementById('linkedinTable');
-                            const tableBody = table.querySelector('tbody');
-                            tableBody.innerHTML = '';
-                            linkedinResults.forEach((result, i) => {
-                                const row = document.createElement('tr');
-
-                                const nameCell = document.createElement('td');
-                                nameCell.textContent = result.title;
-                                row.appendChild(nameCell);
-
-                                const actionCell = document.createElement('td');
-                                const actionButton = document.createElement('button');
-                                actionButton.textContent = 'Preview';
-                                actionButton.className = 'btn btn-secondary';
-                                actionButton.addEventListener('click', () => {
-                                    alert(`Button clicked for ${result.title}`);
-                                });
-                                actionCell.appendChild(actionButton);
-                                row.appendChild(actionCell);
-
-                                tableBody.appendChild(row);
-                            });
-
-                            table.classList.remove('d-none');
+                            }
                         });
                     </script>
                 </templates>
