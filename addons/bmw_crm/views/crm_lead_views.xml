@@ -8,10 +8,18 @@
             <xpath expr="//group[@name='lead_priority']" position="after">
                 <group>
                     <field name="id"/>
-                    <button name="load_linkedin" type="object" class="btn btn-primary">Load LinkedIn</button>
                 </group>
                 <group></group>
+                <div>
+                    <button name="research_user_linkedin" type="object" class="btn btn-primary">Research User LinkedIn</button>
+                </div>
+                <div></div>
                 <div id="linkedinTableContainer" class="d-none">
+                    <div class="g-col-sm-2">
+                        <div class="o_horizontal_separator mt-4 mb-3 text-uppercase fw-bolder small">
+                            User LinkedIn
+                        </div>
+                    </div>
                     <table id="linkedinTable" class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -23,19 +31,93 @@
                         </tbody>
                     </table>
                 </div>
-                <group string="LinkedIn Preview" invisible="not(linkedin_preview_full_name)">
-                    <field name="linkedin_preview_title" invisible="1"/>
-                    <field name="linkedin_preview_link" invisible="1"/>
-                    <field name="linkedin_preview_full_name"/>
-                    <field name="linkedin_preview_profile_photo_preview" widget="image"/>
-                    <field name="linkedin_preview_profile_photo" widget="url" invisible="1"/>
-                    <field name="linkedin_preview_headline"/>
-                    <field name="linkedin_preview_about"/>
-                    <field name="linkedin_preview_description1"/>
-                    <field name="linkedin_preview_description1_link" widget="url"/>
-                    <field name="linkedin_preview_description2"/>
-                    <field name="linkedin_preview_description2_link" widget="url"/>
-                    <field name="linkedin_preview_experiences" readonly="1">
+                <div id="linkedinPreviewContainer" class="d-none">
+                    <div class="g-col-sm-2">
+                        <div class="o_horizontal_separator mt-4 mb-3 text-uppercase fw-bolder small">
+                            LinkedIn Preview
+                        </div>
+                    </div>
+                    <table id="linkedinPreviewTable" class="table table-borderless d-none">
+                        <thead>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Full Name</b></td>
+                                <td id="linkedinPreviewFullName"></td>
+                            </tr>
+                            <tr>
+                                <td><b>Profile Photo Preview</b></td>
+                                <td id="linkedinPreviewProfilePhoto"></td>
+                            </tr>
+                            <tr>
+                                <td><b>Headline</b></td>
+                                <td id="linkedinPreviewHeadline"></td>
+                            </tr>
+                            <tr>
+                                <td><b>About</b></td>
+                                <td id="linkedinPreviewAbout"></td>
+                            </tr>
+                            <tr>
+                                <td><b>Description 1</b></td>
+                                <td id="linkedinPreviewDescription1"></td>
+                            </tr>
+                            <tr>
+                                <td><b>Description 2</b></td>
+                                <td id="linkedinPreviewDescription2"></td>
+                            </tr>
+                            <tr id="linkedinPreviewExperiencesRow" class="d-none">
+                                <td><b>Experiences</b></td>
+                                <td>
+                                    <table id="linkedinPreviewExperiencesTable" class="table table-bordered table-striped"> 
+                                        <thead>
+                                            <tr>
+                                                <th>Position</th>
+                                                <th>Company</th>
+                                                <th>Location</th>
+                                                <th>Starts At</th>
+                                                <th>Duration</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr id="linkedinPreviewEducationsRow" class="d-none">
+                                <td><b>Educations</b></td>
+                                <td>
+                                    <table id="linkedinPreviewEducationsTable" class="table table-bordered table-striped"> 
+                                        <thead>
+                                            <tr>
+                                                <th>College</th>
+                                                <th>Degree</th>
+                                                <th>Degree Field</th>
+                                                <th>Duration</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div id="update_user_linkedin_url"></div>
+                </div>
+                <group string="LinkedIn Data" invisible="not(linkedin_full_name)">
+                    <field name="linkedin_title" invisible="1"/>
+                    <field name="linkedin_link" invisible="1"/>
+                    <field name="linkedin_full_name"/>
+                    <field name="linkedin_profile_photo_preview" widget="image"/>
+                    <field name="linkedin_profile_photo" widget="url" invisible="1"/>
+                    <field name="linkedin_headline"/>
+                    <field name="linkedin_about"/>
+                    <field name="linkedin_description1"/>
+                    <field name="linkedin_description1_link" widget="url"/>
+                    <field name="linkedin_description2"/>
+                    <field name="linkedin_description2_link" widget="url"/>
+                    <field name="linkedin_experiences_count" invisible="1"/>
+                    <field name="linkedin_experiences" readonly="1" invisible="linkedin_experiences_count == 0">
                         <tree editable="false" delete="false" create="false">
                             <field name="position"/>
                             <field name="company_name"/>
@@ -45,7 +127,8 @@
                             <field name="duration"/>
                         </tree>
                     </field>
-                    <field name="linkedin_preview_educations" readonly="1">
+                    <field name="linkedin_educations_count" invisible="1"/>
+                    <field name="linkedin_educations" readonly="1" invisible="linkedin_educations_count == 0">
                         <tree editable="false" delete="false" create="false">
                             <field name="college_name"/>
                             <field name="college_url" widget="url"/>
@@ -54,16 +137,15 @@
                             <field name="college_duration"/>
                         </tree>
                     </field>
-                    <button name="set_as_linkedin_url" type="object" string="Populate" class="btn-primary"/>
                 </group>
                 <group string="Social Media">
                     <field name="linkedin_url" widget="url"/>
                 </group>
                 <templates>
                     <script>
-                        loadLinkedinButton = document.querySelector('button[name="load_linkedin"]');
+                        researchUserLinkedinButton = document.querySelector('button[name="research_user_linkedin"]');
 
-                        loadLinkedinButton.addEventListener('click', async () => {
+                        researchUserLinkedinButton.addEventListener('click', async () => {
                             <!-- Customer Name -->
                             const partnerId = document.getElementById('partner_id_1');
                             const partnerName = partnerId.value;
@@ -71,7 +153,18 @@
                             if (!partnerName) {
                                 alert('Please fill in the Partner Name field first.');
                                 return;
-                            } 
+                            }
+
+                            <!-- Show Spinner (Loading) -->
+                            const spinner = document.createElement('span');
+                            spinner.className = 'spinner-border spinner-border-sm';
+                            spinner.role = 'status';
+                            spinner.ariaHidden = 'true';
+
+                            const originalText = researchUserLinkedinButton.textContent;
+                            researchUserLinkedinButton.textContent = '';
+                            researchUserLinkedinButton.appendChild(spinner);
+                            researchUserLinkedinButton.disabled = true;
 
                             try {
                                 <!-- Load LinkedIn -->
@@ -103,6 +196,17 @@
                                     previewButton.textContent = 'Preview';
                                     previewButton.className = 'btn btn-secondary';
                                     previewButton.addEventListener('click', async () => {
+                                        <!-- Show Spinner (Loading) -->
+                                        const spinner = document.createElement('span');
+                                        spinner.className = 'spinner-border spinner-border-sm';
+                                        spinner.role = 'status';
+                                        spinner.ariaHidden = 'true';
+
+                                        const originalText = previewButton.textContent;
+                                        previewButton.textContent = '';
+                                        previewButton.appendChild(spinner);
+                                        previewButton.disabled = true;
+
                                         try {
                                             const idDiv = document.querySelector('div[name="id"]');
 
@@ -125,26 +229,155 @@
                                                 })
                                                 .then(response => response.json());
 
+                                                if (!linkedinPreviewResponse.result) {
+                                                    alert('There was an error while trying to preview user LinkedIn profile. Please try again.');
+                                                    return;
+                                                }
+
                                                 localStorage.setItem('linkedin_preview_' + linkId, JSON.stringify(linkedinPreviewResponse.result));
                                             }
 
-                                            <!-- Insert LinkedIn Preview -->
-                                            await fetch('/crm-lead/linkedin', {
-                                                method: 'POST',
-                                                headers: {
-                                                    'Content-Type': 'application/json',
-                                                },
-                                                body: JSON.stringify({
-                                                    id: parseInt(idDiv.querySelector('span').textContent, 10),
-                                                    title: result.title,
-                                                    link: result.link,
-                                                    data: JSON.parse(localStorage.getItem('linkedin_preview_' + linkId))
+                                            <!-- Modify LinkedIn Preview Table -->
+                                            const linkedinPreview = JSON.parse(localStorage.getItem('linkedin_preview_' + linkId));
+
+                                            const linkedinPreviewFullName = document.getElementById('linkedinPreviewFullName');
+                                            linkedinPreviewFullName.textContent = linkedinPreview.fullName ? linkedinPreview.fullName : 'N/A';
+
+                                            const linkedinPreviewProfilePhoto = document.getElementById('linkedinPreviewProfilePhoto');
+                                            linkedinPreviewProfilePhoto.innerHTML = '';
+                                            const linkedinPreviewProfilePhotoPreview = document.createElement('img');
+                                            linkedinPreviewProfilePhotoPreview.src = linkedinPreview.profile_photo;
+                                            linkedinPreviewProfilePhoto.appendChild(linkedinPreviewProfilePhotoPreview);
+
+                                            const linkedinPreviewHeadline = document.getElementById('linkedinPreviewHeadline');
+                                            linkedinPreviewHeadline.textContent = linkedinPreview.headline ? linkedinPreview.headline : 'N/A';
+
+                                            const linkedinPreviewAbout = document.getElementById('linkedinPreviewAbout');
+                                            linkedinPreviewAbout.textContent = linkedinPreview.about ? linkedinPreview.about : 'N/A';
+
+                                            const linkedinPreviewDescription1 = document.getElementById('linkedinPreviewDescription1');
+                                            linkedinPreviewDescription1.innerHTML = '';
+                                            const linkedinPreviewDescription1Link = document.createElement('a');
+                                            linkedinPreviewDescription1Link.href = linkedinPreview.description.description1_link;
+                                            linkedinPreviewDescription1Link.textContent = linkedinPreview.description.description1 ? linkedinPreview.description.description1 : 'N/A';
+                                            linkedinPreviewDescription1.appendChild(linkedinPreviewDescription1Link);
+
+                                            const linkedinPreviewDescription2 = document.getElementById('linkedinPreviewDescription2');
+                                            linkedinPreviewDescription2.innerHTML = '';
+                                            const linkedinPreviewDescription2Link = document.createElement('a');
+                                            linkedinPreviewDescription2Link.href = linkedinPreview.description.description2_link;
+                                            linkedinPreviewDescription2Link.textContent = linkedinPreview.description.description2 ? linkedinPreview.description.description2 : 'N/A';
+                                            linkedinPreviewDescription2.appendChild(linkedinPreviewDescription2Link);
+
+                                            const linkedinPreviewExperiencesRow = document.getElementById('linkedinPreviewExperiencesRow');
+                                            if (linkedinPreview.experience.length > 0) {
+                                                linkedinPreviewExperiencesRow.classList.remove('d-none');
+                                                const linkedinPreviewExperiencesTable = document.getElementById('linkedinPreviewExperiencesTable');
+                                                const linkedinPreviewExperiencesTableBody = linkedinPreviewExperiencesTable.querySelector('tbody');
+                                                linkedinPreviewExperiencesTableBody.innerHTML = '';
+                                                linkedinPreview.experience.forEach(experience => {
+                                                    const experienceRow = document.createElement('tr');
+
+                                                    const positionCell = document.createElement('td');
+                                                    positionCell.textContent = experience.position ? experience.position : 'N/A';
+                                                    experienceRow.appendChild(positionCell);
+
+                                                    const companyCell = document.createElement('td');
+                                                    companyCell.innerHTML = '';
+                                                    const companyLink = document.createElement('a');
+                                                    companyLink.href = experience.company_url;
+                                                    companyLink.textContent = experience.company_name ? experience.company_name : 'N/A';
+                                                    companyCell.appendChild(companyLink);
+                                                    experienceRow.appendChild(companyCell);
+
+                                                    const locationCell = document.createElement('td');
+                                                    locationCell.textContent = experience.location ? experience.location : 'N/A';
+                                                    experienceRow.appendChild(locationCell);
+
+                                                    const startsAtCell = document.createElement('td');
+                                                    startsAtCell.textContent = experience.starts_at ? experience.starts_at : 'N/A';
+                                                    experienceRow.appendChild(startsAtCell);
+
+                                                    const durationCell = document.createElement('td');
+                                                    durationCell.textContent = experience.duration ? experience.duration : 'N/A';
+                                                    experienceRow.appendChild(durationCell);
+
+                                                    linkedinPreviewExperiencesTableBody.appendChild(experienceRow);
+                                                });
+                                            } else {
+                                                linkedinPreviewExperiencesRow.classList.add('d-none');
+                                            }
+
+                                            const linkedinPreviewEducationsRow = document.getElementById('linkedinPreviewEducationsRow');
+                                            if (linkedinPreview.education.length > 0) {
+                                                linkedinPreviewEducationsRow.classList.remove('d-none');
+                                                const linkedinPreviewEducationsTable = document.getElementById('linkedinPreviewEducationsTable');
+                                                const linkedinPreviewEducationsTableBody = linkedinPreviewEducationsTable.querySelector('tbody');
+                                                linkedinPreviewEducationsTableBody.innerHTML = '';
+                                                linkedinPreview.education.forEach(education => {
+                                                    const educationRow = document.createElement('tr');
+
+                                                    const collegeCell = document.createElement('td');
+                                                    collegeCell.innerHTML = '';
+                                                    const collegeLink = document.createElement('a');
+                                                    collegeLink.href = education.college_url;
+                                                    collegeLink.textContent = education.college_name ? education.college_name : 'N/A';
+                                                    collegeCell.appendChild(collegeLink);
+                                                    educationRow.appendChild(collegeCell);
+
+                                                    const collegeDegreeCell = document.createElement('td');
+                                                    collegeDegreeCell.textContent = education.college_degree ? education.college_degree : 'N/A';
+                                                    educationRow.appendChild(collegeDegreeCell);
+
+                                                    const collegeDegreeFieldCell = document.createElement('td');
+                                                    collegeDegreeFieldCell.textContent = education.college_degree_field ? education.college_degree_field : 'N/A';
+                                                    educationRow.appendChild(collegeDegreeFieldCell);
+
+                                                    const collegeDurationCell = document.createElement('td');
+                                                    collegeDurationCell.textContent = education.college_duration ? education.college_duration : 'N/A';
+                                                    educationRow.appendChild(collegeDurationCell);
+
+                                                    linkedinPreviewEducationsTableBody.appendChild(educationRow);
+                                                });
+                                            } else {
+                                                linkedinPreviewEducationsRow.classList.add('d-none');
+                                            }
+
+                                            const updateLinkedinUrl = document.getElementById('update_user_linkedin_url');
+                                            updateLinkedinUrl.innerHTML = '';
+                                            const updateLinkedinUrlButton = document.createElement('button');
+                                            updateLinkedinUrlButton.textContent = 'Update User LinkedIn URL';
+                                            updateLinkedinUrlButton.className = 'btn btn-primary';
+                                            updateLinkedinUrlButton.addEventListener('click', async () => {
+                                                <!-- Update LinkedIn Data -->
+                                                await fetch('/crm-lead/linkedin', {
+                                                    method: 'POST',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                    },
+                                                    body: JSON.stringify({
+                                                        id: parseInt(idDiv.querySelector('span').textContent, 10),
+                                                        title: result.title,
+                                                        link: result.link,
+                                                        data: linkedinPreview,
+                                                    })
                                                 })
-                                            })
-                                            .then(response => response.json());
+                                                .then(response => response.json());
+
+                                                location.reload();
+                                            });
+                                            updateLinkedinUrl.appendChild(updateLinkedinUrlButton);
+
+                                            const linkedinPreviewTable = document.getElementById('linkedinPreviewTable');
+                                            linkedinPreviewTable.classList.remove('d-none');
                                         } catch (error) {
-                                            alert('Error during AJAX request:', error);
+                                            console.log('Error:', error);
+                                            alert('There was an error while trying to preview user LinkedIn profile. Please try again.');
                                             return;
+                                        } finally {
+                                            <!-- Hide Spinner (Loading) -->
+                                            previewButton.textContent = originalText;
+                                            previewButton.disabled = false;
                                         }
                                     });
                                     previewCell.appendChild(previewButton);
@@ -155,9 +388,16 @@
 
                                 const tableContainer = document.getElementById('linkedinTableContainer');
                                 tableContainer.classList.remove('d-none');
+                                const linkedinPreviewContainer = document.getElementById('linkedinPreviewContainer');
+                                linkedinPreviewContainer.classList.remove('d-none');
                             } catch (error) {
-                                alert('Error during AJAX request:', error);
+                                console.log('Error:', error);
+                                alert('There was an error while trying to research user LinkedIn profiles. Please try again.');
                                 return;
+                            } finally {
+                                <!-- Hide Spinner (Loading) -->
+                                researchUserLinkedinButton.textContent = originalText;
+                                researchUserLinkedinButton.disabled = false;
                             }
                         });
                     </script>
