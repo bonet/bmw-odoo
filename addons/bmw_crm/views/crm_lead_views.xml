@@ -216,7 +216,7 @@
                                             }
 
                                             <!-- Preview LinkedIn -->
-                                            const linkId = result.link.split('/').pop();
+                                            const linkId = result.link.split('in/')[1].split('/')[0];
                                             if (!localStorage.getItem('linkedin_preview_' + linkId)) {
                                                 const linkedinPreviewResponse = await fetch('/crm-lead/linkedin/preview', {
                                                     method: 'POST',
